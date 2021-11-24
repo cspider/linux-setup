@@ -58,8 +58,11 @@ if [[ ! -d ${INTELLIJ_HOME}  ]]; then
     cd ${INTELLIJ_HOME}
     wget https://download.jetbrains.com/idea/ideaIU-2021.2.3.tar.gz
     tar -xvf ideaIU-2021.2.3.tar.gz
-    cd ideaIU-2021.2.3
-    ln -s ./ideaIU-2021.2.3/bin/idea.sh /usr/bin/idea
+    rm -f ideaIU-2021.2.3.tar.gz
+    INTELLIJ_INSTALL_DIR=$(ls)
+    ln -s ./${INTELLIJ_INSTALL_DIR}/bin/idea.sh /usr/bin/idea
+    cd ~
+    chown susantac:susantac /home/susantac/devtools
 else 
     
     echo_message "Skipping IntelliJ install. Is already installed at ${INTELLIJ_HOME}"
