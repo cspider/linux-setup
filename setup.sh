@@ -1,4 +1,11 @@
-user.name="susantac"
+function echo_message() {
+
+    echo "------------------------------------------------------------------ "
+    echo "${1}"
+    echo "------------------------------------------------------------------ "
+}
+
+USER_HOME="susantac"
 
 dnf update bash -y
 # Install visual source code
@@ -28,21 +35,15 @@ if [[ -z ${chrome_status}  ]]; then
     ## Cleanup chrome
     rm -f google-chrome-stable_current*  
 else 
-    echo "------------------------------------------------------------------ "
-    echo "Skipping Chrome install. Is already installed at: ${chrome_status}}"
-    echo "------------------------------------------------------------------ "
+    echo_message "Skipping Chrome install. Is already installed at: ${chrome_status}}"
 fi
 
 
 # Now do java 11, java 7 and java 8
+
 dnf install java-11-openjdk-devel -y
 dnf install java-17-openjdk-devel -y
 dnf install java-1.8.0-openjdk-devel -y
-java-11-openjdk.x86_64
-
-
-
-
 
 
 # Prepare for IntelliJ IDE
@@ -50,11 +51,17 @@ dnf install epel-release -y
 dnf update
 
 # devtools
-INTELLIJ_HOME=/home/${user.name}/devtools/IntelliJ
-mkdir -p ${INTELLIJ_HOME}
-cd ${INTELLIJ_HOME}
-wget https://download.jetbrains.com/idea/ideaIU-2021.2.3.tar.gz
-tar -xvf ideaIU-2021.2.3.tar.gz
-cd ideaIU-2021.2.3
-ln -s ./ideaIU-2021.2.3/bin/idea.sh /usr/bin/idea
+INTELLIJ_HOME=/home/${USER_HOME}/devtools/IntelliJ
+if [[ ! -d ${INTELLIJ_HOME}  ]]; then 
+    echo_message "Installing IntelliJ at ${INTELLIJ_HOME}"
+    mkdir -p ${INTELLIJ_HOME}
+    cd ${INTELLIJ_HOME}
+    wget https://download.jetbrains.com/idea/ideaIU-2021.2.3.tar.gz
+    tar -xvf ideaIU-2021.2.3.tar.gz
+    cd ideaIU-2021.2.3
+    ln -s ./ideaIU-2021.2.3/bin/idea.sh /usr/bin/idea
+else 
+    
+    echo_message "Skipping IntelliJ install. Is already installed at ${INTELLIJ_HOME}"
 
+fi
