@@ -60,11 +60,19 @@ if [[ ! -d ${INTELLIJ_HOME}  ]]; then
     tar -xvf ideaIU-2021.2.3.tar.gz
     rm -f ideaIU-2021.2.3.tar.gz
     INTELLIJ_INSTALL_DIR=$(ls)
-    ln -s ./${INTELLIJ_INSTALL_DIR}/bin/idea.sh /usr/bin/idea
+    rm -f /usr/bin/idea
+    ln -s ${INTELLIJ_HOME}/${INTELLIJ_INSTALL_DIR}/bin/idea.sh /usr/bin/idea
+    chmod +x /usr/bin/idea
     cd ~
     chown susantac:susantac /home/susantac/devtools
-else 
-    
+else   
     echo_message "Skipping IntelliJ install. Is already installed at ${INTELLIJ_HOME}"
-
 fi
+
+
+# Install Docker
+## Add Docker repository for dnf 
+dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+dnf install  --allowerasing docker-ce docker-ce-cli containerd.io -y
+## Permit all user to connect to Docker engine via socket
+chmod 666 /var/run/docker.sock
