@@ -118,3 +118,6 @@ rm -f apache-maven-3.8.4-bin.tar.gz  # Clean up tar file
 # Add ${USER_HOME}/devtools/apache-maven-3.8.4/bin to the PATH variable
 # and M2_HOME to ${USER_HOME}/devtools/apache-maven-3.8.4
 
+# Thought about Groovy. Manuals install is easier
+# https://groovy-lang.org/install.html
+
