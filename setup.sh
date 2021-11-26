@@ -39,11 +39,17 @@ else
 fi
 
 
-# Now do java 11, java 7 and java 8
 
+# Now do java 11, java 7 and java 8
+# Following did not work as sudo altenatives could not switch between java
 dnf install java-11-openjdk-devel -y
-dnf install java-17-openjdk-devel -y
-dnf install java-1.8.0-openjdk-devel -y
+#dnf install java-17-openjdk-devel -y
+#dnf install java-1.8.0-openjdk-devel -y
+
+# switch between java using the following:
+# sudo alternatives --config java
+# Also add the follow to .bashrc or .zshenv 
+# export JAVA_HOME=$(dirname $(dirname $(readlink $(readlink $(which javac)))))
 
 
 # Prepare for IntelliJ IDE
@@ -74,5 +80,41 @@ fi
 ## Add Docker repository for dnf 
 dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 dnf install  --allowerasing docker-ce docker-ce-cli containerd.io -y
+## Enable and Start docker service
+systemctl enable --now docker
 ## Permit all user to connect to Docker engine via socket
 chmod 666 /var/run/docker.sock
+## Add current user to Docker group
+usermod -aG docker $USER
+
+
+
+# Support for virtualization - you do not need this if you installed 
+# Linux in server mode
+dnf install virt-install virt-viewer -y
+# However libvirtd service is not enabled by default, enable it
+systemctl enable libvirtd --now
+#Manual check later to make sure 
+# virt-host-validate  
+
+
+# This Oh-My-Zsh section is configured as per 
+#       https://mpolinowski.github.io/devnotes/2019-09-22--zsh-on-centos8
+#Install oh-my-zsh - most probably already installed - so a no-op
+dnf -y install zsh
+## Make it a default shell 
+chsh -s $(which zsh) root
+chsh -s $(which zsh)    # For you user account
+
+## Install Oh-My-Zsh Framework
+wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh
+
+#Install Maven
+cd /home/${USER_HOME}/devtools
+wget https://dlcdn.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
+tar xzvf apache-maven-3.8.4-bin.tar.gz
+chown -R susantac:susantac ./apache-maven-3.8.4
+rm -f apache-maven-3.8.4-bin.tar.gz  # Clean up tar file
+# Add ${USER_HOME}/devtools/apache-maven-3.8.4/bin to the PATH variable
+# and M2_HOME to ${USER_HOME}/devtools/apache-maven-3.8.4
+
