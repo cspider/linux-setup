@@ -1,0 +1,12 @@
+
+Read from here: https://linuxize.com/post/how-to-add-user-to-sudoers-in-debian/
+
+When you create a new install user is not in the sudoer group
+
+You need to do the following things:
+
+1. Run as root: usermod -aG sudo username
+2. verify: sudo whoami
+3. Add user to the sudoers file: /etc/sudoers
+ a. visudo
+ b. username ALL=(ALL) NOPASSWD:ALL
