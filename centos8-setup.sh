@@ -121,3 +121,11 @@ rm -f apache-maven-3.8.4-bin.tar.gz  # Clean up tar file
 # Thought about Groovy. Manuals install is easier
 # https://groovy-lang.org/install.html
 
+# Install Gradle
+# Install Postman
+# cd Downloads/
+# tar -xzf Postman-linux-x64-7.32.0.tar.gz
+# sudo mkdir -p /opt/apps/
+# sudo mv Postman-linux-x64-7.32.0/Postman /opt/apps/
+# sudo ln -s /opt/apps/Postman/Postman /usr/local/bin/postman
+# postman
