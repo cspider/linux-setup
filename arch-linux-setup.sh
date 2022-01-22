@@ -31,8 +31,10 @@ fdisk -l
 #
 # /boot  1 GB 1MiB 1024Mib
 # 
-parted
-mkpart primary ext4 1MiB 1024MiB
+parted /dev/sda 
+
+mklabel msdos
+mkpart primaryd ext4 1MiB 1024MiB
 set 1 boot on
 mkpart primary linux-swap 1024MiB  5GiB
 mkpart primary ext4 5GiB  100%
@@ -49,7 +51,7 @@ mkdir -p /mnt/boot
 mount /dev/sda1 /mnt/boot
 
 # Now install linux essential packages
-pacstrap /mnt base linux linux-firmware
+pacstrap -i /mnt base linux linux-firmware
 
 # Generate 	an fstab file 
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -57,7 +59,6 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 # Change root to the new system
 arch-chroot /mnt
-
 
 # At this point I realized base package did not bring VIM in. So, needed to install vim package
 # to be able to change files
@@ -86,5 +87,7 @@ ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
 hwclock --systohc --utc
 
 # bootloader configuration: install grub
-packman -S grub
+pacman -S grub
 
+# Install the grub package. (It will replace grub-legacyAUR if that is already installed.) Then do:
+ grub-install --target=i386-pc /dev/sdX
