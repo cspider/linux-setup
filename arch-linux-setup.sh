@@ -28,27 +28,24 @@ fdisk -l
 # Ignore everythong loop, rom or airoots
 
 # Start disk partitioning using parted or fdisk
-#
-# /boot  1 GB 1MiB 1024Mib
+# swap  >512 MB 1MiB 1024Mib
+# /mnt   1204MiB 100%
 # 
 parted /dev/sda 
 
 mklabel msdos
-mkpart primaryd ext4 1MiB 1024MiB
+mkpart primary linux-swap 1MiB  2GiB
+mkpart primary ext4 2GiB  100%
 set 1 boot on
-mkpart primary linux-swap 1024MiB  5GiB
-mkpart primary ext4 5GiB  100%
 quit
 
 # Create file system for /dev/sda1
-mkfs.ext4 /dev/sda1
-mkdf.ext4 /dev/sda3
-mkswap    /dev/sda2
-swapon    /dev/sda2
+mkfs.ext4 /dev/sda2
+mkswap    /dev/sda1
+swapon    /dev/sda1
 
-mount /dev/sda3 /mnt
-mkdir -p /mnt/boot
-mount /dev/sda1 /mnt/boot
+mount /dev/sda2 /mnt
+
 
 # Now install linux essential packages
 pacstrap -i /mnt base linux linux-firmware
@@ -79,15 +76,23 @@ echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 
 #Select a time zone:
 tzselect
-
 # Setup timezone
 ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
 
 #It is recommended to adjust the time skew, and set the time standard to UTC:
 hwclock --systohc --utc
-
-# bootloader configuration: install grub
-pacman -S grub
+	
+# bootloader configuration: install grub, net-tools, inetutils
+pacman -S grub net-tools inetutils
 
 # Install the grub package. (It will replace grub-legacyAUR if that is already installed.) Then do:
- grub-install --target=i386-pc /dev/sdX
+# do not use partition number 
+grub-install --target=i386-pc /dev/sda
+
+grub-mkconfig -o /boot/grub/grub.cfg
+
+## Remember to change hostname
+
+exit 
+
+reboot
