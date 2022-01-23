@@ -1,7 +1,8 @@
 
-# Arch Linux setup following two links:
+# Arch Linux setup following these links:
 ## https://wiki.archlinux.org/title/installation_guide
 ## https://youtu.be/chApqIF0jRQ   
+## https://ambrovanwyk.com/index.php/installing-arch-linux-on-vmware-workstation-player/
 
 # if the following ls works w/o error, i.e. EFI boot mode
 # ls /sys/firmware/efi/efivars 
