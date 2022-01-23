@@ -2,6 +2,7 @@
 # Arch Linux setup following two links:
 ## https://wiki.archlinux.org/title/installation_guide
 ## https://youtu.be/chApqIF0jRQ   
+## https://ambrovanwyk.com/index.php/installing-arch-linux-on-vmware-workstation-player/#comment-9
 
 # if the following ls works w/o error, i.e. EFI boot mode
 # ls /sys/firmware/efi/efivars 
@@ -43,7 +44,7 @@ quit
 mkfs.ext4 /dev/sda2
 mkswap    /dev/sda1
 swapon    /dev/sda1
-
+https://www.niche.com/colleges/search/best-colleges/s/pennsylvania/
 mount /dev/sda2 /mnt
 
 
@@ -59,7 +60,7 @@ arch-chroot /mnt
 
 # At this point I realized base package did not bring VIM in. So, needed to install vim package
 # to be able to change files
-pacman -S vim
+pacman -S vim grub net-tools inetutils dhcpcd
 
 # Set the time zone
 ln -sf /usr/share/zoneinfo/US/Eastern /etc/localtime
@@ -91,7 +92,16 @@ grub-install --target=i386-pc /dev/sda
 
 grub-mkconfig -o /boot/grub/grub.cfg
 
-## Remember to change hostname
+# Required for network manager to start networking service
+systemctl start dhcpcd
+systemctl enable dhcpcd 
+
+## Edit the /etc/pacman.conf file, uncomment the line with [multilib] and the following
+## include=/etc/pacman.d/mirrorlist and save and exit
+# And sync pacman database
+pacman -Syy
+
+## Remember to change hostname	
 
 exit 
 
