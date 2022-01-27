@@ -44,7 +44,6 @@ quit
 mkfs.ext4 /dev/sda2
 mkswap    /dev/sda1
 swapon    /dev/sda1
-https://www.niche.com/colleges/search/best-colleges/s/pennsylvania/
 mount /dev/sda2 /mnt
 
 
