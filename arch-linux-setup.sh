@@ -61,11 +61,15 @@ arch-chroot /mnt
 # to be able to change files
 pacman -S vim grub net-tools inetutils dhcpcd
 
+#Select a time zone:
+tzselect
+
 # Set the time zone
 ln -sf /usr/share/zoneinfo/US/Eastern /etc/localtime
 
 # @Run hwclock(8) to generate /etc/adjtime:
-hwclock --systohc
+#It is recommended to adjust the time skew, and set the time standard to UTC:
+hwclock --systohc --utc
 
 # Uncomment en_US.UTF-8 UTF-8 in /etc/locale.gen, as well as other needed localisations. Save the file, and generate the new locales: 
 locale-gen
@@ -73,20 +77,8 @@ locale-gen
 # Setup localization - set LANG variable accordingly
 echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 
-
-#Select a time zone:
-tzselect
-# Setup timezone
-ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
-
-#It is recommended to adjust the time skew, and set the time standard to UTC:
-hwclock --systohc --utc
-	
-# bootloader configuration: install grub, net-tools, inetutils
-pacman -S grub net-tools inetutils
-
 # Install the grub package. (It will replace grub-legacyAUR if that is already installed.) Then do:
-# do not use partition number 
+# do not use partition number -- this is instant
 grub-install --target=i386-pc /dev/sda
 
 grub-mkconfig -o /boot/grub/grub.cfg
