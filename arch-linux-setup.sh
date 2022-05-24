@@ -92,7 +92,11 @@ systemctl enable dhcpcd
 # And sync pacman database
 pacman -Syy
 
+## Remember to change root password or use a user name
+password testuser
+
 ## Remember to change hostname	
+
 
 exit 
 
