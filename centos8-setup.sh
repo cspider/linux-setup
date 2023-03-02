@@ -40,10 +40,10 @@ fi
 
 
 
-# Now do java 11, java 7 and java 8
+# Now do java 11 and Java 17
 # Following did not work as sudo altenatives could not switch between java
 dnf install java-11-openjdk-devel -y
-#dnf install java-17-openjdk-devel -y
+dnf install java-17-openjdk-devel -y
 #dnf install java-1.8.0-openjdk-devel -y
 
 # switch between java using the following:
@@ -75,6 +75,10 @@ else
     echo_message "Skipping IntelliJ install. Is already installed at ${INTELLIJ_HOME}"
 fi
 
+#
+# **** TODO  - check if Docker is already installed, then skip 
+#              rather than generating bunch of errors
+#
 
 # Install Docker
 ## Add Docker repository for dnf 
@@ -86,8 +90,6 @@ systemctl enable --now docker
 chmod 666 /var/run/docker.sock
 ## Add current user to Docker group
 usermod -aG docker $USER
-
-
 
 # Support for virtualization - you do not need this if you installed 
 # Linux in server mode
@@ -110,13 +112,14 @@ chsh -s $(which zsh)    # For you user account
 wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh
 
 #Install Maven
+MVN_VERSON=3.9.0
 cd /home/${USER_HOME}/devtools
-wget https://dlcdn.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
-tar xzvf apache-maven-3.8.4-bin.tar.gz
-chown -R susantac:susantac ./apache-maven-3.8.4
-rm -f apache-maven-3.8.4-bin.tar.gz  # Clean up tar file
-# Add ${USER_HOME}/devtools/apache-maven-3.8.4/bin to the PATH variable
-# and M2_HOME to ${USER_HOME}/devtools/apache-maven-3.8.4
+wget https://dlcdn.apache.org/maven/maven-3/${MVN_VERSON}/binaries/apache-maven-${MVN_VERSON}-bin.tar.gz
+tar xzvf apache-maven-${MVN_VERSON}-bin.tar.gz
+chown -R susantac:susantac ./apache-maven-${MVN_VERSON}
+rm -f apache-maven-${MVN_VERSON}-bin.tar.gz  # Clean up tar file
+# Add ${USER_HOME}/devtools/apache-maven-${MVN_VERSON}/bin to the PATH variable
+# and M2_HOME to ${USER_HOME}/devtools/apache-maven-${MVN_VERSON}
 
 # Thought about Groovy. Manuals install is easier
 # https://groovy-lang.org/install.html
@@ -129,3 +132,5 @@ rm -f apache-maven-3.8.4-bin.tar.gz  # Clean up tar file
 # sudo mv Postman-linux-x64-7.32.0/Postman /opt/apps/
 # sudo ln -s /opt/apps/Postman/Postman /usr/local/bin/postman
 # postman
+
+# Will add Terraform and AWS CLI
