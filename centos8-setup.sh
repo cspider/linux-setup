@@ -4,8 +4,8 @@ function echo_message() {
     echo "${1}"
     echo "------------------------------------------------------------------ "
 }
-
-USER_HOME="susantac"
+USER_NAME="susantac"
+USER_HOME="/home/${USER_NAME}"
 
 dnf update bash -y
 # Install visual source code
@@ -14,9 +14,10 @@ sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.micros
 
 dnf -y check-update
 dnf install -y code 
+## Facter helps to detect if we are running on virtual machine or bare metal
+dnf -y install facter
 
-
-cp -f /usr/share/applications/code.desktop  /home/susantac/Desktop/
+cp -f /usr/share/applications/code.desktop  ${USER_HOME}/Desktop/
 
 # Install gnome-tweaks to enable desktop 
 
@@ -29,9 +30,9 @@ if [[ -z ${chrome_status}  ]]; then
     wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
     dnf localinstall google-chrome-stable_current_x86_64.rpm -y
 
-    cp -f /usr/share/applications/google-chrome.desktop /home/susantac/Desktop/
-    chmod u+x /home/susantac/Desktop/google-chrome.desktop
-    chown susantac:susantac /home/susantac/Desktop/google-chrome.desktop
+    cp -f /usr/share/applications/google-chrome.desktop ${USER_HOME}/Desktop/
+    chmod u+x ${USER_HOME}/Desktop/google-chrome.desktop
+    chown ${USER_NAME}:${USER_NAME} ${USER_HOME}/Desktop/google-chrome.desktop
     ## Cleanup chrome
     rm -f google-chrome-stable_current*  
 else 
@@ -57,7 +58,7 @@ dnf install epel-release -y
 dnf update
 
 # devtools
-INTELLIJ_HOME=/home/${USER_HOME}/devtools/IntelliJ
+INTELLIJ_HOME=${USER_HOME}/devtools/IntelliJ
 if [[ ! -d ${INTELLIJ_HOME}  ]]; then 
     echo_message "Installing IntelliJ at ${INTELLIJ_HOME}"
     mkdir -p ${INTELLIJ_HOME}
@@ -82,23 +83,30 @@ fi
 
 # Install Docker
 ## Add Docker repository for dnf 
-dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-dnf install  --allowerasing docker-ce docker-ce-cli containerd.io -y
-## Enable and Start docker service
-systemctl enable --now docker
-## Permit all user to connect to Docker engine via socket
-chmod 666 /var/run/docker.sock
-## Add current user to Docker group
-usermod -aG docker $USER
+which docker > /dev/null 2>&1
+if [ "$?" -ne "0" ]; then
+   echo "Docker is not installed. Going to install Docker....."
+   dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+   dnf install  --allowerasing docker-ce docker-ce-cli containerd.io -y
+   ## Enable and Start docker service
+   systemctl enable --now docker
+   ## Permit all user to connect to Docker engine via socket
+   chmod 666 /var/run/docker.sock
+   ## Add current user to Docker group
+   usermod -aG docker $USER
+fi
 
 # Support for virtualization - you do not need this if you installed 
 # Linux in server mode
-dnf install virt-install virt-viewer -y
-# However libvirtd service is not enabled by default, enable it
-systemctl enable libvirtd --now
-#Manual check later to make sure 
-# virt-host-validate  
-
+detect_virtual=$(dmesg | grep -i "Hypervisor detected")
+if [[ !(-z "${detect_virtual}") && "${detect_virtual}" =~ "Hypervisor"  ]]; then
+  echo "Running on a hypervisor....."
+  dnf install virt-install virt-viewer -y
+  # However libvirtd service is not enabled by default, enable it
+  systemctl enable libvirtd --now
+  #Manual check later to make sure
+  # virt-host-validate
+fi
 
 # This Oh-My-Zsh section is configured as per 
 #       https://mpolinowski.github.io/devnotes/2019-09-22--zsh-on-centos8
@@ -113,13 +121,15 @@ wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - 
 
 #Install Maven
 MVN_VERSON=3.9.0
-cd /home/${USER_HOME}/devtools
-wget https://dlcdn.apache.org/maven/maven-3/${MVN_VERSON}/binaries/apache-maven-${MVN_VERSON}-bin.tar.gz
-tar xzvf apache-maven-${MVN_VERSON}-bin.tar.gz
-chown -R susantac:susantac ./apache-maven-${MVN_VERSON}
-rm -f apache-maven-${MVN_VERSON}-bin.tar.gz  # Clean up tar file
-# Add ${USER_HOME}/devtools/apache-maven-${MVN_VERSON}/bin to the PATH variable
-# and M2_HOME to ${USER_HOME}/devtools/apache-maven-${MVN_VERSON}
+if [[ ! -d  "${USER_HOME}/devtools/${MVN_VERSION}" ]]; then
+  cd ${USER_HOME}/devtools
+  wget https://dlcdn.apache.org/maven/maven-3/${MVN_VERSON}/binaries/apache-maven-${MVN_VERSON}-bin.tar.gz
+  tar xzvf apache-maven-${MVN_VERSON}-bin.tar.gz
+  chown -R susantac:susantac ./apache-maven-${MVN_VERSON}
+  rm -f apache-maven-${MVN_VERSON}-bin.tar.gz  # Clean up tar file
+  # Add ${USER_NAME}/devtools/apache-maven-${MVN_VERSON}/bin to the PATH variable
+  # and M2_HOME to ${USER_NAME}/devtools/apache-maven-${MVN_VERSON}
+fi
 
 # Thought about Groovy. Manuals install is easier
 # https://groovy-lang.org/install.html
