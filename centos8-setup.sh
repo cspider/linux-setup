@@ -153,4 +153,11 @@ else
   echo "terraform is already installed. Skipping Terraform..."
 fi 
 
-
+aws_response=$(which aws 2>/dev/null)
+if [ -z $aws_response ]; then 
+  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+  unzip awscliv2.zip
+  sudo ./aws/install
+else 
+  echo "AWS is already installed. Skipping AWS..."
+fi
