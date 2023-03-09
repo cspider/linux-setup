@@ -144,3 +144,13 @@ fi
 # postman
 
 # Will add Terraform and AWS CLI
+terraform_response=$(which terraform 2>/dev/null)
+if [ -z $terraform_response ]; then
+  dnf install -y dnf-plugins-core
+  dnf config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+  dnf install terraform -y
+else
+  echo "terraform is already installed. Skipping Terraform..."
+fi 
+
+
